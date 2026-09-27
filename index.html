@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ocean Mall - POS & Receipt System</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- html2pdf library for PDF generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    
+    /* Dedicated printable receipt dimensions */
+    #receipt-template {
+      width: 790px;
+      background: #ffffff;
+      color: #0f172a;
+    }
+  </style>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800 antialiased">
+
+  <!-- Top Navigation Bar with Logos & Placeholders -->
+  <header class="bg-slate-900 text-white border-b border-slate-800 shadow-lg sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
+      
+      <!-- Ocean Mall & Testing Logo Slot -->
+      <div class="flex items-center gap-3">
+        <!-- ========================================================= --> 
+         <img src="ocean.jpg" alt="">
+
+        <div id="ocean-mall-logo-slot" class="flex items-center gap-3">
+          <!-- <svg class="w-10 h-10" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="46" fill="#0B2545" stroke="#134074" stroke-width="2"/>
+            <path d="M 50,12 A 38,38 0 1,1 12,50" stroke="#00A896" stroke-width="8" stroke-linecap="round"/>
+            <path d="M 22,50 A 28,28 0 0,1 50,22" stroke="#028090" stroke-width="6" stroke-linecap="round"/>
+            <path d="M 35,42 C 40,28 65,30 72,45 C 78,58 60,75 48,72 C 38,70 32,58 35,42 Z" fill="#F4A261"/>
+            <circle cx="62" cy="42" r="3" fill="#0B2545"/>
+          </svg> -->
+          <div>
+            <h1 class="font-black text-lg tracking-wider text-white leading-tight">OCEAN MALL</h1>
+            <p class="text-[10px] text-teal-400 font-semibold tracking-widest uppercase">Shop • Eat • Enjoy</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Center - Payment Partner Badges (JazzCash & EasyPaisa) -->
+      <div class="hidden lg:flex items-center gap-3 bg-slate-800/80 px-4 py-1.5 rounded-full border border-slate-700">
+        <span class="text-xs text-slate-400 font-medium">Payment Options:</span>
+        
+        <!-- ========================================================= -->
+        <!-- PLACEHOLDER: JazzCash Logo Slot                           -->
+        <!-- ========================================================= -->
+         <img src="jaazz.png" class="h-12 w-auto" alt="Logo">
+        <div class="flex items-center gap-1.5 bg-black px-2.5 py-1 rounded-md border border-amber-500/40">
+          <!-- <svg class="w-4 h-4" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="8" fill="#111"/><circle cx="20" cy="14" r="8" fill="#E61C24"/><path d="M 12,28 C 12,20 28,20 28,28 L 28,32 L 12,32 Z" fill="#FFB703"/></svg>
+          <span class="text-xs font-black text-amber-400 tracking-tight"></span> -->
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- PLACEHOLDER: EasyPaisa Logo Slot                          -->
+        <!-- ========================================================= -->
+        
+         <img src="easypaisa.jfif" class="h-12 w-auto" alt="Logo">
+        <div class="flex items-center gap-1.5 bg-emerald-950 px-2.5 py-1 rounded-md border border-emerald-500/40">
+          <!-- <div class="w-4 h-4 rounded-full bg-emerald-500 flex items-center justify-center font-black text-[10px] text-black">e</div> -->
+          <!-- <span class="text-xs font-black text-emerald-400 tracking-tight">easypaisa</span> -->
+        </div>
+      </div>
+
+      <!-- FBR Tax Registered Badge Slot -->
+      <div class="flex items-center gap-2">
+        <!-- ========================================================= -->
+        <!-- PLACEHOLDER: FBR Official Logo Slot                       -->
+        <!-- Replace SVG below with your custom FBR Image/SVG if needed -->
+        <!-- ========================================================= -->
+        <div id="fbr-logo-slot" class="text-right">
+          <svg class="h-8 w-auto inline-block" viewBox="0 0 160 50" fill="none">
+            <path d="M 10 35 Q 80 5 150 35" stroke="#2A9D8F" stroke-width="4" fill="none" stroke-linecap="round"/>
+            <polygon points="125,12 128,18 135,18 130,22 132,28 125,24 118,28 120,22 115,18 122,18" fill="#E9C46A"/>
+            <text x="15" y="32" font-family="Inter, sans-serif" font-weight="900" font-size="26" fill="#023E8A">FBR</text>
+            <text x="18" y="42" font-family="Inter, sans-serif" font-weight="800" font-size="8" fill="#0077B6" letter-spacing="2">PAKISTAN</text>
+          </svg>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+    
+    <!-- Left Column: Product Selection Catalog -->
+    <section class="lg:col-span-7 space-y-4">
+      <div class="flex justify-between items-center border-b border-slate-200 pb-3">
+        <div>
+          <h2 class="text-xl font-bold text-slate-900">Store Inventory</h2>
+          <p class="text-xs text-slate-500">Scan or select items to build customer invoice</p>
+        </div>
+        <span class="text-xs font-semibold text-slate-500 bg-white px-3 py-1.5 rounded-lg border border-slate-200">
+          Terminal: T01
+        </span>
+      </div>
+
+      <!-- Product Cards Grid with Image Slots -->
+      <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <!-- Populated via JavaScript -->
+      </div>
+    </section>
+
+    <!-- Right Column: Cart & Checkout -->
+    <section class="lg:col-span-5">
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sticky top-24">
+        
+        <div class="flex justify-between items-center border-b border-slate-100 pb-4 mb-4">
+          <div class="flex items-center gap-2">
+            <h2 class="text-lg font-bold text-slate-900">Current Order</h2>
+            <span id="cart-count" class="bg-indigo-50 text-indigo-700 text-xs font-bold px-2.5 py-1 rounded-full">0 Items</span>
+          </div>
+          <button onclick="clearCart()" class="text-xs text-slate-400 hover:text-rose-600 transition-colors">Clear All</button>
+        </div>
+
+        <!-- Cart Items List -->
+        <div id="cart-items" class="divide-y divide-slate-100 max-h-64 overflow-y-auto mb-4 pr-1">
+          <p class="text-slate-400 text-sm text-center py-8">Your cart is currently empty.</p>
+        </div>
+
+        <!-- Payment Options Selection including EasyPaisa -->
+        <div class="border-t border-slate-200 pt-4 mb-4">
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Select Payment Method</label>
+          <div class="grid grid-cols-4 gap-2">
+            
+            <button onclick="setPaymentMethod('Cash')" id="pm-Cash" class="pm-btn border-2 border-indigo-600 bg-indigo-50/50 text-indigo-900 font-bold text-xs py-2 px-1 rounded-xl flex items-center justify-center gap-1 transition-all">
+              💵 Cash
+            </button>
+            
+            <!-- JazzCash Option -->
+            <button onclick="setPaymentMethod('JazzCash')" id="pm-JazzCash" class="pm-btn border border-slate-200 hover:border-amber-500 text-slate-700 font-bold text-xs py-2 px-1 rounded-xl flex items-center justify-center gap-1 transition-all">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="8" fill="#111"/><circle cx="20" cy="14" r="8" fill="#E61C24"/><path d="M 12,28 C 12,20 28,20 28,28 L 28,32 L 12,32 Z" fill="#FFB703"/></svg>
+              JazzCash
+            </button>
+            
+            <!-- EasyPaisa Option -->
+            <button onclick="setPaymentMethod('EasyPaisa')" id="pm-EasyPaisa" class="pm-btn border border-slate-200 hover:border-emerald-500 text-slate-700 font-bold text-xs py-2 px-1 rounded-xl flex items-center justify-center gap-1 transition-all">
+              <div class="w-3.5 h-3.5 rounded-full bg-emerald-600 flex items-center justify-center text-[9px] text-white font-bold">e</div>
+              Easypaisa
+            </button>
+
+            <!-- Card Option -->
+            <button onclick="setPaymentMethod('Card')" id="pm-Card" class="pm-btn border border-slate-200 hover:border-slate-400 text-slate-700 font-bold text-xs py-2 px-1 rounded-xl flex items-center justify-center gap-1 transition-all">
+              💳 Card
+            </button>
+
+          </div>
+        </div>
+
+        <!-- Financial Breakdown -->
+        <div class="border-t border-slate-200 pt-4 space-y-2 text-sm">
+          <div class="flex justify-between text-slate-600">
+            <span>Subtotal (Excl. Tax)</span>
+            <span font-mono id="cart-subtotal" class="font-semibold text-slate-800">PKR 0.00</span>
+          </div>
+          <div class="flex justify-between text-slate-600">
+            <span>FBR GST Amount</span>
+            <span font-mono id="cart-gst" class="font-semibold text-slate-800">PKR 0.00</span>
+          </div>
+          <div class="flex justify-between text-lg font-black text-slate-900 border-t border-slate-100 pt-3">
+            <span>Grand Total</span>
+            <span font-mono id="cart-total" class="text-indigo-600">PKR 0.00</span>
+          </div>
+        </div>
+
+        <!-- Checkout Action Button - Opens New Tab Printable Receipt -->
+        <button onclick="openReceiptInNewTab()" id="checkout-btn" disabled class="w-full mt-6 bg-slate-900 hover:bg-indigo-600 disabled:bg-slate-200 text-white font-bold py-3.5 px-4 rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+          Checkout & Open Printable Receipt
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- HIDDEN PRINTABLE RECEIPT TEMPLATE (Used for generating external receipt page) -->
+  <div style="display: none;">
+    <div id="receipt-template" class="p-10 font-sans">
+      
+      <!-- Top Row Logos: Ocean Mall Logo (Left) & FBR Logo (Right) -->
+      <div class="flex justify-between items-center mb-6">
+        
+        <!-- PLACEHOLDER: Ocean Mall Logo Slot on Printable Receipt -->
+        <div class="flex items-center gap-3">
+          <img src="ocean.jpg">
+          <svg class="w-16 h-16" viewBox="0 0 100 100" fill="none">
+            <circle cx="50" cy="50" r="46" fill="#0B2545" stroke="#134074" stroke-width="2"/>
+            <path d="M 50,12 A 38,38 0 1,1 12,50" stroke="#00A896" stroke-width="8" stroke-linecap="round"/>
+            <path d="M 22,50 A 28,28 0 0,1 50,22" stroke="#028090" stroke-width="6" stroke-linecap="round"/>
+            <path d="M 35,42 C 40,28 65,30 72,45 C 78,58 60,75 48,72 C 38,70 32,58 35,42 Z" fill="#F4A261"/>
+            <circle cx="62" cy="42" r="3" fill="#0B2545"/>
+          </svg>
+          <div>
+            <h1 class="text-3xl font-black tracking-wider text-slate-900 leading-tight">OCEAN MALL</h1>
+            <p class="text-xs font-bold text-slate-600 tracking-widest uppercase">S H O P  •  E A T  •  E N J O Y</p>
+          </div>
+        </div>
+
+        <!-- PLACEHOLDER: FBR Pakistan Logo Slot on Printable Receipt -->
+        <div class="text-right">
+          <svg class="h-12 w-auto inline-block" viewBox="0 0 160 50" fill="none">
+            <path d="M 10 35 Q 80 5 150 35" stroke="#2A9D8F" stroke-width="4" fill="none" stroke-linecap="round"/>
+            <polygon points="125,12 128,18 135,18 130,22 132,28 125,24 118,28 120,22 115,18 122,18" fill="#E9C46A"/>
+            <text x="15" y="32" font-family="Inter, sans-serif" font-weight="900" font-size="28" fill="#023E8A">FBR</text>
+            <text x="18" y="42" font-family="Inter, sans-serif" font-weight="800" font-size="8" fill="#0077B6" letter-spacing="2">PAKISTAN</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Document Banner -->
+      <div class="text-center border-t-2 border-b-2 border-slate-900 py-1.5 mb-6">
+        <h2 class="text-base font-extrabold tracking-widest text-slate-900 uppercase">SALES INVOICE / RECEIPT</h2>
+      </div>
+
+      <!-- Metadata Header Grid -->
+      <div class="grid grid-cols-2 gap-x-12 gap-y-1 text-xs mb-6 text-slate-800 font-semibold">
+        <div class="space-y-1">
+          <div class="flex"><span class="w-24 text-slate-600">Mall Name</span><span>: Ocean Mall</span></div>
+          <div class="flex"><span class="w-24 text-slate-600">Address</span><span>: Main Boulevard, Mardan</span></div>
+          <div class="flex"><span class="w-24 text-slate-600">GST No.</span><span>: 2793876-0001-0</span></div>
+          <div class="flex"><span class="w-24 text-slate-600">STR No.</span><span>: 2025-OCM-0004587</span></div>
+        </div>
+        <div class="space-y-1">
+          <div class="flex"><span class="w-24 text-slate-600">Date</span><span id="pdf-date">: --</span></div>
+          <div class="flex"><span class="w-24 text-slate-600">Time</span><span id="pdf-time">: --</span></div>
+          <div class="flex"><span class="w-24 text-slate-600">Invoice No.</span><span id="pdf-invoice">: --</span></div>
+          <div class="flex"><span class="w-24 text-slate-600">Terminal No.</span><span>: T01</span></div>
+        </div>
+      </div>
+
+      <div class="border-t border-b border-slate-300 py-1.5 mb-6 flex justify-between text-xs text-slate-800 font-semibold">
+        <div><span class="text-slate-600">Operator</span>: Ahsan Khan</div>
+        <div><span class="text-slate-600">Registered No.</span>: 2793876-0001-0</div>
+      </div>
+
+      <!-- Product Items Table -->
+      <table class="w-full text-xs text-left mb-6">
+        <thead>
+          <tr class="border-b-2 border-slate-900 text-slate-900 font-extrabold">
+            <th class="py-2 w-6">#</th>
+            <th class="py-2">PRODUCT</th>
+            <th class="py-2 text-center">QTY</th>
+            <th class="py-2 text-right">UNIT PRICE<br><span class="text-[9px] font-normal text-slate-500">(PKR)</span></th>
+            <th class="py-2 text-right">AMOUNT<br><span class="text-[9px] font-normal text-slate-500">(PKR)</span></th>
+            <th class="py-2 text-center">GST<br><span class="text-[9px] font-normal text-slate-500">(%)</span></th>
+            <th class="py-2 text-right">GST AMOUNT<br><span class="text-[9px] font-normal text-slate-500">(PKR)</span></th>
+            <th class="py-2 text-right">SECTION</th>
+          </tr>
+        </thead>
+        <tbody id="pdf-table-body" class="divide-y divide-slate-200 text-slate-800 font-medium">
+          <!-- Item rows inserted via JavaScript -->
+        </tbody>
+      </table>
+
+      <!-- Tax and Total Summary Table -->
+      <div class="grid grid-cols-12 gap-4 border-t-2 border-slate-900 pt-4 mb-8">
+        
+        <!-- GST Breakdown (Left) -->
+        <div class="col-span-6">
+          <p class="text-xs font-black uppercase tracking-wider text-slate-900 mb-2">GST SUMMARY</p>
+          <table class="w-full text-xs text-left">
+            <thead>
+              <tr class="border-b border-slate-300 font-bold text-slate-600">
+                <th class="pb-1">TAX RATE</th>
+                <th class="pb-1 text-right">TAXABLE AMOUNT</th>
+                <th class="pb-1 text-right">GST AMOUNT</th>
+              </tr>
+            </thead>
+            <tbody id="pdf-gst-breakdown" class="divide-y divide-slate-100 font-medium">
+              <!-- GST breakdown rows -->
+            </tbody>
+          </table>
+          <div class="flex justify-between border-t border-slate-300 pt-2 mt-2 text-xs font-black">
+            <span>TOTAL GST</span>
+            <span id="pdf-total-gst">0.00</span>
+          </div>
+        </div>
+
+        <!-- Grand Total Summary (Right) -->
+        <div class="col-span-6 pl-6 space-y-2 text-right">
+          <div class="flex justify-between text-sm font-bold text-slate-700">
+            <span>SUBTOTAL (PKR)</span>
+            <span id="pdf-subtotal">0.00</span>
+          </div>
+          <div class="flex justify-between text-sm font-bold text-slate-700">
+            <span>GST AMOUNT (PKR)</span>
+            <span id="pdf-gst-amount">0.00</span>
+          </div>
+          <div class="flex justify-between text-xl font-black text-slate-900 border-t-2 border-b-2 border-slate-900 py-2 mt-2">
+            <span>TOTAL (PKR)</span>
+            <span id="pdf-grand-total">0.00</span>
+          </div>
+
+          <!-- Selected Payment Method Badge on Receipt -->
+          <div class="flex items-center justify-end gap-2 pt-2">
+            <span class="text-xs text-slate-600 font-medium">Payment Method :</span>
+            <div id="pdf-payment-badge" class="flex items-center gap-1.5 font-bold text-xs">
+              <!-- Dynamically rendered -->
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Receipt Footer with Verification & Logos -->
+      <div class="border-t border-slate-200 pt-6 flex justify-between items-end">
+        
+        <!-- Verification QR & Link -->
+        <div class="flex items-center gap-4">
+          <div class="w-20 h-20 bg-slate-900 p-1 flex items-center justify-center rounded">
+            <div class="w-full h-full border-2 border-white grid grid-cols-3 gap-0.5 p-0.5">
+              <div class="bg-white"></div><div class="bg-slate-900"></div><div class="bg-white"></div>
+              <div class="bg-slate-900"></div><div class="bg-white"></div><div class="bg-slate-900"></div>
+              <div class="bg-white"></div><div class="bg-slate-900"></div><div class="bg-white"></div>
+            </div>
+          </div>
+          <div class="text-[11px] text-slate-600">
+            <p>For verification, visit:</p>
+            <p class="font-bold text-slate-900">www.fbr.gov.pk</p>
+            <p>or scan the QR code</p>
+          </div>
+        </div>
+
+        <!-- Center Thank You Note -->
+        <div class="text-center">
+          <p class="text-xs font-bold text-slate-900 mb-1">Thank you for shopping at Ocean Mall!</p>
+          <p class="text-[11px] text-slate-500">Your support helps us serve you better.</p>
+        </div>
+
+        <!-- Footer Address & Payment Partner Logo Slot -->
+        <div class="text-right">
+          <!-- PLACEHOLDER: Payment Partner Footer Logo Slot -->
+          <div class="flex items-center justify-end gap-1.5 mb-1" id="pdf-footer-payment-logo">
+            <span class="text-[10px] text-slate-400 font-semibold uppercase">Powered By</span>
+            <div class="flex items-center gap-1 bg-black px-2 py-0.5 rounded">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="8" fill="#111"/><circle cx="20" cy="14" r="8" fill="#E61C24"/><path d="M 12,28 C 12,20 28,20 28,28 L 28,32 L 12,32 Z" fill="#FFB703"/></svg>
+              <span class="text-[10px] font-black fill-amber-400 text-amber-400">JazzCash</span>
+            </div>
+          </div>
+          <p class="font-bold text-xs text-slate-800">Ocean Mall</p>
+          <p class="text-[11px] text-slate-500">Mardan, Pakistan</p>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // Product Database with Product Image Placeholders Slot (`image: ...`)
+    // Replace `image` values below with real product image URLs when available!
+    // =========================================================================
+    const products = [
+      { id: 1, name: "Nestle Water 500ml", price: 120, gst: 18, section: "Beverages", image: "nestle.jfif" },
+      { id: 2, name: "Lay's Classic Chips", price: 180, gst: 18, section: "Snacks", image: "lays.jpg" },
+      { id: 3, name: "Coca Cola 1.5L", price: 250, gst: 18, section: "Beverages", image: "coca.png" },
+      { id: 4, name: "Maggi Noodles (5 Pack)", price: 420, gst: 18, section: "Groceries", image: "maggi.jpg" },
+      { id: 5, name: "Dove Shampoo 400ml", price: 650, gst: 18, section: "Personal Care", image: "dove.avif" },
+      { id: 6, name: "Lux Soap 75g", price: 90, gst: 18, section: "Personal Care", image: "lux.jfif" },
+      { id: 7, name: "Toothpaste Colgate 100g", price: 220, gst: 18, section: "Personal Care", image: "cool.jfif" },
+      { id: 8, name: "Dettol Handwash 200ml", price: 350, gst: 18, section: "Home Care", image: "dettol.jfif" },
+      { id: 9, name: "Bread (Pack)", price: 160, gst: 0, section: "Bakery", image: "braed.jfif" },
+      { id: 10, name: "Eggs (1 Dozen)", price: 350, gst: 0, section: "Fresh Food", image: "egg.jfif" }
+    ];
+
+    let cart = [];
+    let selectedPayment = 'Cash';
+
+    // Render Inventory Cards with Product Image Slot
+    function renderProducts() {
+      const grid = document.getElementById('product-grid');
+      grid.innerHTML = products.map(p => `
+        <div class="bg-white border border-slate-200 rounded-2xl p-4 flex flex-col justify-between hover:border-indigo-300 transition-all shadow-sm">
+          <div>
+            
+            <!-- PLACEHOLDER: Product Image Slot -->
+            <div class="w-full h-32 bg-slate-100 rounded-xl mb-3 flex items-center justify-center overflow-hidden relative group">
+              ${p.image 
+                ? `<img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover">`
+                : `<div class="text-center p-3">
+                     <svg class="w-8 h-8 mx-auto text-slate-300 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                     <span class="text-[10px] text-slate-400 font-semibold uppercase">Product Image Slot</span>
+                   </div>`
+              }
+            </div>
+
+            <div class="flex justify-between items-start">
+              <span class="text-[10px] font-bold text-indigo-600 uppercase tracking-widest bg-indigo-50 px-2 py-0.5 rounded-md">${p.section}</span>
+              <span class="text-[10px] font-bold px-2 py-0.5 ${p.gst > 0 ? 'bg-amber-50 text-amber-700' : 'bg-emerald-50 text-emerald-700'} rounded-md">GST ${p.gst}%</span>
+            </div>
+            
+            <h3 class="font-bold text-slate-900 mt-2 text-sm">${p.name}</h3>
+            <p class="text-slate-900 font-black text-base mt-1">PKR ${p.price.toFixed(2)}</p>
+          </div>
+
+          <button onclick="addToCart(${p.id})" class="mt-4 w-full bg-slate-900 hover:bg-indigo-600 text-white text-xs font-bold py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5">
+            <span>+</span> Add to Cart
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function addToCart(id) {
+      const existing = cart.find(item => item.id === id);
+      if (existing) {
+        existing.qty += 1;
+      } else {
+        const product = products.find(p => p.id === id);
+        cart.push({ ...product, qty: 1 });
+      }
+      updateCartUI();
+    }
+
+    function updateQty(id, delta) {
+      const item = cart.find(i => i.id === id);
+      if (item) {
+        item.qty += delta;
+        if (item.qty <= 0) {
+          cart = cart.filter(i => i.id !== id);
+        }
+      }
+      updateCartUI();
+    }
+
+    function clearCart() {
+      cart = [];
+      updateCartUI();
+    }
+
+    function setPaymentMethod(method) {
+      selectedPayment = method;
+      document.querySelectorAll('.pm-btn').forEach(btn => {
+        btn.classList.remove('border-2', 'border-indigo-600', 'bg-indigo-50/50', 'text-indigo-900');
+        btn.classList.add('border', 'border-slate-200', 'text-slate-700');
+      });
+
+      const activeBtn = document.getElementById(`pm-${method}`);
+      if (activeBtn) {
+        activeBtn.classList.remove('border', 'border-slate-200', 'text-slate-700');
+        activeBtn.classList.add('border-2', 'border-indigo-600', 'bg-indigo-50/50', 'text-indigo-900');
+      }
+    }
+
+    function updateCartUI() {
+      const cartContainer = document.getElementById('cart-items');
+      const checkoutBtn = document.getElementById('checkout-btn');
+      const cartCount = document.getElementById('cart-count');
+
+      const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+      cartCount.textContent = `${totalItems} Items`;
+
+      if (cart.length === 0) {
+        cartContainer.innerHTML = `<p class="text-slate-400 text-sm text-center py-8">Your cart is empty.</p>`;
+        checkoutBtn.disabled = true;
+        document.getElementById('cart-subtotal').textContent = 'PKR 0.00';
+        document.getElementById('cart-gst').textContent = 'PKR 0.00';
+        document.getElementById('cart-total').textContent = 'PKR 0.00';
+        return;
+      }
+
+      checkoutBtn.disabled = false;
+
+      let subtotal = 0;
+      let totalGst = 0;
+
+      cartContainer.innerHTML = cart.map(item => {
+        const itemAmount = item.price * item.qty;
+        const itemGst = itemAmount * (item.gst / 100);
+        subtotal += itemAmount;
+        totalGst += itemGst;
+
+        return `
+          <div class="py-3 flex justify-between items-center">
+            <div>
+              <p class="font-bold text-xs text-slate-800">${item.name}</p>
+              <p class="text-[11px] text-slate-500">PKR ${item.price.toFixed(2)} x ${item.qty}</p>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-slate-50">
+                <button onclick="updateQty(${item.id}, -1)" class="px-2 py-0.5 text-slate-600 hover:bg-slate-200 text-xs font-bold">-</button>
+                <span class="px-2 text-xs font-bold text-slate-800">${item.qty}</span>
+                <button onclick="updateQty(${item.id}, 1)" class="px-2 py-0.5 text-slate-600 hover:bg-slate-200 text-xs font-bold">+</button>
+              </div>
+              <span class="text-xs font-black text-slate-900 w-16 text-right">PKR ${itemAmount.toFixed(2)}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('cart-subtotal').textContent = `PKR ${subtotal.toFixed(2)}`;
+      document.getElementById('cart-gst').textContent = `PKR ${totalGst.toFixed(2)}`;
+      document.getElementById('cart-total').textContent = `PKR ${(subtotal + totalGst).toFixed(2)}`;
+    }
+
+    // Open Receipt in a New Window/Tab with full controls & exact styling
+    function openReceiptInNewTab() {
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '-');
+      const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+      const invoiceNo = String(Math.floor(Math.random() * 899999) + 100000).padStart(7, '0');
+
+      document.getElementById('pdf-date').textContent = `: ${dateStr}`;
+      document.getElementById('pdf-time').textContent = `: ${timeStr}`;
+      document.getElementById('pdf-invoice').textContent = `: ${invoiceNo}`;
+
+      // Set Payment Badge on Receipt
+      const paymentBadge = document.getElementById('pdf-payment-badge');
+      const footerPaymentLogo = document.getElementById('pdf-footer-payment-logo');
+
+      if (selectedPayment === 'JazzCash') {
+        paymentBadge.innerHTML = `
+          <div class="flex items-center gap-1 bg-black px-2 py-0.5 rounded text-amber-400 font-extrabold text-xs">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="8" fill="#111"/><circle cx="20" cy="14" r="8" fill="#E61C24"/><path d="M 12,28 C 12,20 28,20 28,28 L 28,32 L 12,32 Z" fill="#FFB703"/></svg>
+            JazzCash
+          </div>
+        `;
+        footerPaymentLogo.innerHTML = `
+          <span class="text-[10px] text-slate-400 font-semibold uppercase">Powered By</span>
+          <div class="flex items-center gap-1 bg-black px-2 py-0.5 rounded">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="8" fill="#111"/><circle cx="20" cy="14" r="8" fill="#E61C24"/><path d="M 12,28 C 12,20 28,20 28,28 L 28,32 L 12,32 Z" fill="#FFB703"/></svg>
+            <span class="text-[10px] font-black text-amber-400">JazzCash</span>
+          </div>
+        `;
+      } else if (selectedPayment === 'EasyPaisa') {
+        paymentBadge.innerHTML = `
+          <div class="flex items-center gap-1 bg-emerald-950 border border-emerald-500/30 px-2 py-0.5 rounded text-emerald-400 font-extrabold text-xs">
+            <div class="w-3.5 h-3.5 rounded-full bg-emerald-500 flex items-center justify-center text-[9px] text-black font-black">e</div>
+            Easypaisa
+          </div>
+        `;
+        footerPaymentLogo.innerHTML = `
+          <span class="text-[10px] text-slate-400 font-semibold uppercase">Powered By</span>
+          <div class="flex items-center gap-1 bg-emerald-950 border border-emerald-500/30 px-2 py-0.5 rounded">
+            <div class="w-3.5 h-3.5 rounded-full bg-emerald-500 flex items-center justify-center text-[9px] text-black font-black">e</div>
+            <span class="text-[10px] font-black text-emerald-400">easypaisa</span>
+          </div>
+        `;
+      } else if (selectedPayment === 'Card') {
+        paymentBadge.innerHTML = `<span class="bg-slate-100 border border-slate-300 px-2 py-0.5 rounded text-slate-800">💳 Card Payment</span>`;
+        footerPaymentLogo.innerHTML = `<span class="text-[10px] font-bold text-slate-500">Card Payment Terminal</span>`;
+      } else {
+        paymentBadge.innerHTML = `<span class="bg-slate-100 border border-slate-300 px-2 py-0.5 rounded text-slate-800">💵 Cash</span>`;
+        footerPaymentLogo.innerHTML = `<span class="text-[10px] font-bold text-slate-500">Cash Counter T01</span>`;
+      }
+
+      // Populate Items Table
+      let subtotal = 0;
+      let totalGst = 0;
+      const gstSummaryMap = {};
+
+      const tbody = document.getElementById('pdf-table-body');
+      tbody.innerHTML = cart.map((item, index) => {
+        const lineAmount = item.price * item.qty;
+        const lineGst = lineAmount * (item.gst / 100);
+
+        subtotal += lineAmount;
+        totalGst += lineGst;
+
+        if (!gstSummaryMap[item.gst]) {
+          gstSummaryMap[item.gst] = { taxable: 0, gstAmount: 0 };
+        }
+        gstSummaryMap[item.gst].taxable += lineAmount;
+        gstSummaryMap[item.gst].gstAmount += lineGst;
+
+        return `
+          <tr>
+            <td class="py-2 text-slate-500 font-bold">${index + 1}</td>
+            <td class="py-2 font-bold text-slate-900">${item.name}</td>
+            <td class="py-2 text-center font-bold">${item.qty}</td>
+            <td class="py-2 text-right">${item.price.toFixed(2)}</td>
+            <td class="py-2 text-right">${lineAmount.toFixed(2)}</td>
+            <td class="py-2 text-center">${item.gst}%</td>
+            <td class="py-2 text-right">${lineGst.toFixed(2)}</td>
+            <td class="py-2 text-right text-slate-600 font-medium">${item.section}</td>
+          </tr>
+        `;
+      }).join('');
+
+      // Populate GST Summary Breakdown
+      const gstTbody = document.getElementById('pdf-gst-breakdown');
+      gstTbody.innerHTML = Object.keys(gstSummaryMap).map(rate => `
+        <tr>
+          <td class="py-1 font-bold">${rate}%</td>
+          <td class="py-1 text-right">${gstSummaryMap[rate].taxable.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+          <td class="py-1 text-right">${gstSummaryMap[rate].gstAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+        </tr>
+      `).join('');
+
+      document.getElementById('pdf-total-gst').textContent = totalGst.toLocaleString('en-US', { minimumFractionDigits: 2 });
+      document.getElementById('pdf-subtotal').textContent = subtotal.toLocaleString('en-US', { minimumFractionDigits: 2 });
+      document.getElementById('pdf-gst-amount').textContent = totalGst.toLocaleString('en-US', { minimumFractionDigits: 2 });
+      document.getElementById('pdf-grand-total').textContent = (subtotal + totalGst).toLocaleString('en-US', { minimumFractionDigits: 2 });
+
+      // Build & open New Window/Tab with printable content
+      const receiptHtml = document.getElementById('receipt-template').outerHTML;
+      const printWindow = window.open('', '_blank');
+
+      printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Ocean Mall Invoice - #${invoiceNo}</title>
+          <script src="https://cdn.tailwindcss.com"><\/script>
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"><\/script>
+          <style>
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+            body { font-family: 'Inter', sans-serif; background: #0f172a; padding: 2rem; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; }
+            #receipt-wrapper { background: white; border-radius: 12px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+            @media print {
+              body { background: white; padding: 0; }
+              #action-bar { display: none !important; }
+              #receipt-wrapper { box-shadow: none; border-radius: 0; }
+            }
+          </style>
+        </head>
+        <body>
+          
+          <!-- Top Action Bar for Print & Download -->
+          <div id="action-bar" class="mb-6 flex gap-4 bg-slate-800 p-3 rounded-2xl border border-slate-700 shadow-xl">
+            <button onclick="window.print()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm px-6 py-2.5 rounded-xl transition-all flex items-center gap-2 shadow-lg">
+              🖨️ Print Receipt
+            </button>
+            <button onclick="downloadPDF()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm px-6 py-2.5 rounded-xl transition-all flex items-center gap-2 shadow-lg">
+              📥 Download PDF
+            </button>
+          </div>
+
+          <!-- Printable Wrapper -->
+          <div id="receipt-wrapper">
+            ${receiptHtml}
+          </div>
+
+          <script>
+            function downloadPDF() {
+              const element = document.getElementById('receipt-template');
+              const opt = {
+                margin:       0.2,
+                filename:     'OceanMall_Invoice_${invoiceNo}.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, logging: false },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+              };
+              html2pdf().set(opt).from(element).save();
+            }
+          <\/script>
+        </body>
+        </html>
+      `);
+
+      printWindow.document.close();
+    }
+
+    renderProducts();
+  </script>
+<!-- adding Nexcrt loog -->
+  <footer>
+    <h1></h1>
+   <center>Powered by NeXcart <img src="loognexcart.png" style="width: 50p; height:50px"> </center>
+</body>
+</html>
